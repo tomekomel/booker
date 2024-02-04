@@ -9,7 +9,7 @@ import {
 import { UserEntity } from './user.entity';
 import { ParkingSpotEntity } from './parking-spot.entity';
 
-@Entity()
+@Entity('booking')
 export class BookingEntity {
   @PrimaryGeneratedColumn()
   id: number;
