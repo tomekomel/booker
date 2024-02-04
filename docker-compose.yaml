@@ -12,6 +12,8 @@ services:
       - NODE_ENV=dev
     volumes:
       - .:/home/node/app
+    env_file:
+      - .env
 
   postgres:
     container_name: postgres_container
