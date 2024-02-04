@@ -9,7 +9,7 @@ export class DatabaseModule {
     const imports = [
       ConfigModule.forRoot(),
       TypeOrmModule.forRoot(dbConfig),
-      TypeOrmModule.forFeature(),
+      TypeOrmModule.forFeature(entitiesList),
     ];
 
     return {
