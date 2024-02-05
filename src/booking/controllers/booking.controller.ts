@@ -16,6 +16,11 @@ import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
+  @Get()
+  async getBookings(): Promise<BookingEntity[]> {
+    return this.bookingService.getAll();
+  }
+
   @Get(':bookingId')
   async getBooking(
     @Param('bookingId', ParseIntPipe) bookingId: number,

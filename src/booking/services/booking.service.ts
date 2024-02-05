@@ -27,6 +27,10 @@ export class BookingService implements BookingServiceInterface {
     return this.bookingRepository.existsBy({ id });
   }
 
+  async getAll(): Promise<BookingEntity[]> {
+    return this.bookingRepository.find();
+  }
+
   async getById(id: number): Promise<BookingEntity> {
     return this.bookingRepository.findOne({
       where: { id },
@@ -56,7 +60,7 @@ export class BookingService implements BookingServiceInterface {
       );
     }
 
-    const existingBookings = await this.bookingRepository
+    const conflictingBookings = await this.bookingRepository
       .createQueryBuilder('booking')
       .where(
         'booking.parkingSpotId = :parkingSpotId AND ' +
@@ -69,7 +73,7 @@ export class BookingService implements BookingServiceInterface {
       )
       .getMany();
 
-    if (existingBookings.length > 0) {
+    if (conflictingBookings.length > 0) {
       const errorMessage = `Parking spot: [${bookParkingSpotDto.parkingSpotId}] is already booked for that time: ${bookParkingSpotDto.startDate} - ${bookParkingSpotDto.endDate}.`;
       this.logger.error(errorMessage);
       throw new ConflictException(errorMessage);
