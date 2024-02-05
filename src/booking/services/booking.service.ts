@@ -1,13 +1,16 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingEntity } from '../entities';
 import { Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
 import { ParkingSpotService } from './parking-spot.service';
 import { UserService } from './user.service';
+import { BookingServiceInterface } from './booking-service.interface';
 
 @Injectable()
-export class BookingService {
+export class BookingService implements BookingServiceInterface {
+  private readonly logger = new Logger(BookingService.name);
+
   constructor(
     @InjectRepository(BookingEntity)
     private readonly bookingRepository: Repository<BookingEntity>,
@@ -26,9 +29,15 @@ export class BookingService {
     });
   }
 
+  async delete(id: number): Promise<void> {
+    await this.bookingRepository.delete(id);
+
+    this.logger.log(`Booking with ID [${id}] deleted successfully.`);
+  }
+
   async bookParkingSpot(
     bookParkingSpotDto: BookParkingSpotDto,
-  ): Promise<BookingEntity> {
+  ): Promise<void> {
     const { createdById, startDate, endDate, parkingSpotId } =
       bookParkingSpotDto;
 
@@ -50,6 +59,8 @@ export class BookingService {
     booking.endDate = endDate;
     booking.parkingSpot = parkingSpot;
 
-    return this.bookingRepository.save(booking);
+    await this.bookingRepository.save(booking);
+
+    this.logger.log(`Booking for user: ${createdBy.firstName} ${createdBy.lastName} created successfully.`);
   }
 }

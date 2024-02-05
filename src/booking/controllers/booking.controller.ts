@@ -1,4 +1,13 @@
-import { Body, Controller, Get, NotFoundException, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
 import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
@@ -8,7 +17,9 @@ export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
   @Get(':bookingId')
-  async getBooking(bookingId: number): Promise<BookingEntity> {
+  async getBooking(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+  ): Promise<BookingEntity> {
     if (!(await this.bookingService.exists(bookingId))) {
       throw new NotFoundException('Booking not found!');
     }
@@ -16,7 +27,19 @@ export class BookingController {
   }
 
   @Post()
-  async bookParkingSpot(@Body() bookParkingSpot: BookParkingSpotDto): Promise<void> {
+  async bookParkingSpot(
+    @Body() bookParkingSpot: BookParkingSpotDto,
+  ): Promise<void> {
     await this.bookingService.bookParkingSpot(bookParkingSpot);
+  }
+
+  @Delete(':bookingId')
+  async delete(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+  ): Promise<void> {
+    if (!(await this.bookingService.exists(bookingId))) {
+      throw new NotFoundException('Booking not found!');
+    }
+    await this.bookingService.delete(bookingId);
   }
 }
