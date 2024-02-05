@@ -1,13 +1,13 @@
-import { IsDate, IsNumber } from 'class-validator';
+import { IsDateString, IsNumber} from 'class-validator';
 
 export class BookParkingSpotDto {
   @IsNumber()
   createdById: number;
 
-  @IsDate()
+  @IsDateString()
   startDate: Date;
 
-  @IsDate()
+  @IsDateString()
   endDate: Date;
 
   @IsNumber()
