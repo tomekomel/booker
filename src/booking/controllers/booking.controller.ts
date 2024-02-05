@@ -1,6 +1,7 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common';
-import { BookingService } from '../services/booking.service';
+import { Body, Controller, Get, NotFoundException, Post } from '@nestjs/common';
+import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
+import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
 
 @Controller('bookings')
 export class BookingController {
@@ -12,5 +13,10 @@ export class BookingController {
       throw new NotFoundException('Booking not found!');
     }
     return this.bookingService.getById(bookingId);
+  }
+
+  @Post()
+  async bookParkingSpot(@Body() bookParkingSpot: BookParkingSpotDto): Promise<void> {
+    await this.bookingService.bookParkingSpot(bookParkingSpot);
   }
 }
