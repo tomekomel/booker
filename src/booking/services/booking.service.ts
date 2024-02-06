@@ -14,6 +14,7 @@ import { BookingServiceInterface } from './booking-service.interface';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
 import { UserRole } from '../../authorisation/user-roles.enum';
 import { UpdateBookingDto } from '../dto/update-booking.dto';
+import { BookingTimeValidationService } from './booking-time-validation.service';
 
 @Injectable()
 export class BookingService implements BookingServiceInterface {
@@ -24,6 +25,7 @@ export class BookingService implements BookingServiceInterface {
     private readonly bookingRepository: Repository<BookingEntity>,
     private readonly parkingSpotService: ParkingSpotService,
     private readonly userService: UserService,
+    private readonly bookingTimeValidationService: BookingTimeValidationService,
   ) {}
 
   async exists(id: number): Promise<boolean> {
@@ -59,7 +61,7 @@ export class BookingService implements BookingServiceInterface {
     this.logger.log(`Booking with ID [${id}] deleted successfully.`);
   }
 
-  async bookParkingSpot(
+  async create(
     bookParkingSpotDto: CreateBookingDto,
     userId: number,
   ): Promise<void> {
@@ -77,25 +79,11 @@ export class BookingService implements BookingServiceInterface {
       );
     }
 
-    const conflictingBookings = await this.bookingRepository
-      .createQueryBuilder('booking')
-      .where(
-        'booking.parkingSpotId = :parkingSpotId AND ' +
-          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR ' +
-          '(booking.startDate >= :startDate AND booking.startDate < :endDate))',
-        {
-          parkingSpotId,
-          startDate,
-          endDate,
-        },
-      )
-      .getMany();
-
-    if (conflictingBookings.length > 0) {
-      const errorMessage = `Parking spot: [${bookParkingSpotDto.parkingSpotId}] is already booked for that time: ${bookParkingSpotDto.startDate} - ${bookParkingSpotDto.endDate}.`;
-      this.logger.error(errorMessage);
-      throw new ConflictException(errorMessage);
-    }
+    await this.bookingTimeValidationService.validateBookingTime(
+      parkingSpotId,
+      startDate,
+      endDate,
+    );
 
     const booking = new BookingEntity();
     booking.createdBy = createdBy;
@@ -128,27 +116,12 @@ export class BookingService implements BookingServiceInterface {
       );
     }
 
-    const conflictingBookings = await this.bookingRepository
-      .createQueryBuilder('booking')
-      .where(
-        'booking.parkingSpotId = :parkingSpotId AND ' +
-          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR ' +
-          '(booking.startDate >= :startDate AND booking.startDate < :endDate))' +
-          'AND booking.id != :bookingId',
-        {
-          parkingSpotId,
-          startDate,
-          endDate,
-          bookingId,
-        },
-      )
-      .getMany();
-
-    if (conflictingBookings.length > 0) {
-      const errorMessage = `Parking spot: [${parkingSpotId}] is already booked for that time: ${startDate} - ${endDate}.`;
-      this.logger.error(errorMessage);
-      throw new ConflictException(errorMessage);
-    }
+    await this.bookingTimeValidationService.validateBookingTime(
+        parkingSpotId,
+        startDate,
+        endDate,
+        bookingId
+    );
 
     booking.startDate = startDate;
     booking.endDate = endDate;

@@ -41,7 +41,7 @@ export class BookingController {
     @Body() bookParkingSpot: CreateBookingDto,
     @AuthorisedUserParams() userParams: UserParamsInterface,
   ): Promise<void> {
-    await this.bookingService.bookParkingSpot(
+    await this.bookingService.create(
       bookParkingSpot,
       userParams.userId,
     );
