@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/bookings/1",
+					"raw": "http://localhost:8080/bookings/17",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -19,7 +19,26 @@
 					"port": "8080",
 					"path": [
 						"bookings",
-						"1"
+						"17"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all bookings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bookings"
 					]
 				}
 			},
@@ -31,7 +50,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/bookings/1",
+					"raw": "http://localhost:8080/bookings/18",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -39,7 +58,7 @@
 					"port": "8080",
 					"path": [
 						"bookings",
-						"1"
+						"18"
 					]
 				}
 			},
@@ -49,9 +68,88 @@
 			"name": "Create new booking",
 			"request": {
 				"method": "POST",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"startDate\": \"2024-02-14T18:00\",\n    \"endDate\": \"2024-02-15T20:30\",\n    \"parkingSpotId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bookings"
+					]
+				}
 			},
 			"response": []
+		},
+		{
+			"name": "Edit booking",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"startDate\": \"2024-02-14T18:30\",\n    \"endDate\": \"2024-02-14T20:30\",\n    \"parkingSpotId\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/bookings/26",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bookings",
+						"26"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE1MTYyMzkwMjJ9.8aOP6TSAYKGphtUf7LCG0uQcgERrDAjTCbfOJrnV290",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }

@@ -6,14 +6,16 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
-import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
+import { CreateBookingDto } from '../dto/create-booking.dto';
 import { AuthorisedUserParams } from '../../authorisation/decorators';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
 import { CanAccessBookingGuard } from '../../authorisation/guards/can-access-booking.guard';
+import { UpdateBookingDto } from '../dto/update-booking.dto';
 
 @Controller('bookings')
 export class BookingController {
@@ -35,14 +37,23 @@ export class BookingController {
   }
 
   @Post()
-  async bookParkingSpot(
-    @Body() bookParkingSpot: BookParkingSpotDto,
+  async createBooking(
+    @Body() bookParkingSpot: CreateBookingDto,
     @AuthorisedUserParams() userParams: UserParamsInterface,
   ): Promise<void> {
     await this.bookingService.bookParkingSpot(
       bookParkingSpot,
       userParams.userId,
     );
+  }
+
+  @Put(':bookingId')
+  @UseGuards(CanAccessBookingGuard)
+  async updateBooking(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+    @Body() updateBookingDto: UpdateBookingDto,
+  ): Promise<void> {
+    await this.bookingService.update(bookingId, updateBookingDto);
   }
 
   @Delete(':bookingId')

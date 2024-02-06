@@ -1,12 +1,12 @@
 import { BookingEntity } from '../entities';
-import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
+import { CreateBookingDto } from '../dto/create-booking.dto';
 
 export interface BookingServiceInterface {
   exists(id: number): Promise<boolean>;
   getById(id: number): Promise<BookingEntity>;
   delete(id: number): Promise<void>;
   bookParkingSpot(
-    bookParkingSpotDto: BookParkingSpotDto,
+    bookParkingSpotDto: CreateBookingDto,
     userId: number
   ): Promise<void>;
 }

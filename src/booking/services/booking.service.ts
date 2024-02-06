@@ -7,12 +7,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
+import { CreateBookingDto } from '../dto/create-booking.dto';
 import { ParkingSpotService } from './parking-spot.service';
 import { UserService } from './user.service';
 import { BookingServiceInterface } from './booking-service.interface';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
 import { UserRole } from '../../authorisation/user-roles.enum';
+import { UpdateBookingDto } from '../dto/update-booking.dto';
 
 @Injectable()
 export class BookingService implements BookingServiceInterface {
@@ -59,7 +60,7 @@ export class BookingService implements BookingServiceInterface {
   }
 
   async bookParkingSpot(
-    bookParkingSpotDto: BookParkingSpotDto,
+    bookParkingSpotDto: CreateBookingDto,
     userId: number,
   ): Promise<void> {
     const { startDate, endDate, parkingSpotId } = bookParkingSpotDto;
@@ -80,11 +81,12 @@ export class BookingService implements BookingServiceInterface {
       .createQueryBuilder('booking')
       .where(
         'booking.parkingSpotId = :parkingSpotId AND ' +
-          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR (booking.startDate > :startDate AND booking.startDate < :endDate))',
+          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR ' +
+          '(booking.startDate >= :startDate AND booking.startDate < :endDate))',
         {
-          parkingSpotId: bookParkingSpotDto.parkingSpotId,
-          startDate: bookParkingSpotDto.startDate,
-          endDate: bookParkingSpotDto.endDate,
+          parkingSpotId,
+          startDate,
+          endDate,
         },
       )
       .getMany();
@@ -106,5 +108,54 @@ export class BookingService implements BookingServiceInterface {
     this.logger.log(
       `Booking for parking spot: [${parkingSpotId}] for user: ${createdBy.firstName} ${createdBy.lastName} created successfully.`,
     );
+  }
+
+  async update(
+    bookingId: number,
+    updateBookingDto: UpdateBookingDto,
+  ): Promise<void> {
+    const booking = await this.getById(bookingId);
+    if (!booking) {
+      throw new NotFoundException(`Booking with ID [${bookingId}] not found!`);
+    }
+
+    const { startDate, endDate, parkingSpotId } = updateBookingDto;
+
+    const parkingSpot = await this.parkingSpotService.getById(parkingSpotId);
+    if (!parkingSpot) {
+      throw new NotFoundException(
+        `Parking spot with ID [${parkingSpotId}] not found.`,
+      );
+    }
+
+    const conflictingBookings = await this.bookingRepository
+      .createQueryBuilder('booking')
+      .where(
+        'booking.parkingSpotId = :parkingSpotId AND ' +
+          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR ' +
+          '(booking.startDate >= :startDate AND booking.startDate < :endDate))' +
+          'AND booking.id != :bookingId',
+        {
+          parkingSpotId,
+          startDate,
+          endDate,
+          bookingId,
+        },
+      )
+      .getMany();
+
+    if (conflictingBookings.length > 0) {
+      const errorMessage = `Parking spot: [${parkingSpotId}] is already booked for that time: ${startDate} - ${endDate}.`;
+      this.logger.error(errorMessage);
+      throw new ConflictException(errorMessage);
+    }
+
+    booking.startDate = startDate;
+    booking.endDate = endDate;
+    booking.parkingSpot = parkingSpot;
+
+    await this.bookingRepository.save(booking);
+
+    this.logger.log(`Booking with ID [${bookingId}] updated successfully.`);
   }
 }

@@ -1,6 +1,6 @@
-import { IsDateString, IsNumber} from 'class-validator';
+import { IsDateString, IsNumber } from 'class-validator';
 
-export class BookParkingSpotDto {
+export class CreateBookingDto {
   @IsDateString()
   startDate: Date;
 
