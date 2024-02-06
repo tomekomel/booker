@@ -104,7 +104,7 @@ export class BookingService implements BookingServiceInterface {
     await this.bookingRepository.save(booking);
 
     this.logger.log(
-      `Booking for user: ${createdBy.firstName} ${createdBy.lastName} created successfully.`,
+      `Booking for parking spot: [${parkingSpotId}] for user: ${createdBy.firstName} ${createdBy.lastName} created successfully.`,
     );
   }
 }

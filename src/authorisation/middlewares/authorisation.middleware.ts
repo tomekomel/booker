@@ -12,7 +12,6 @@ import * as Jose from 'jose';
 @Injectable()
 export class AuthorisationMiddleware implements NestMiddleware {
   public readonly logger = new Logger(AuthorisationMiddleware.name);
-  private keyFetcher: Jose.JWTVerifyGetKey;
 
   constructor(private configService: ConfigService) {}
 
@@ -33,11 +32,12 @@ export class AuthorisationMiddleware implements NestMiddleware {
 
       try {
         const decodedToken: Jose.JWTPayload = Jose.decodeJwt(token);
-        if (decodedToken.userId) {
+        if (decodedToken.userId && decodedToken.role) {
           req.body.userId = decodedToken.userId;
           req.body.role = decodedToken.role;
         }
       } catch (error: unknown) {
+        this.logger.error(`Token verification failed: `, error);
         throw new UnauthorizedException(`Token verification failed`);
       }
     }

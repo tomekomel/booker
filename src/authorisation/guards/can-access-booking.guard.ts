@@ -16,13 +16,13 @@ export class CanAccessBookingGuard implements CanActivate {
   private readonly logger = new Logger(CanAccessBookingGuard.name);
   constructor(private readonly bookingService: BookingService) {}
 
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const userParams: UserParamsInterface = getUserParamsFromContext(context);
     const request = context.switchToHttp().getRequest();
     const bookingId = Number(request.params.bookingId);
 
     if (!(await this.bookingService.exists(bookingId))) {
-      throw new NotFoundException('Booking not found!');
+      throw new NotFoundException(`Booking with ID [${bookingId}] not found!`);
     }
 
     if (userParams.role === UserRole.ADMIN) {
