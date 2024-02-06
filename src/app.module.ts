@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { BookingModule } from './booking/booking.module';
 import { DatabaseModule } from './database/database.module';
 import { dbConfig } from './database/database.config';
+import { AuthorisationMiddleware } from './authorisation/authorisation.middleware';
 
 @Module({
   imports: [
@@ -13,4 +14,8 @@ import { dbConfig } from './database/database.config';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AuthorisationMiddleware).forRoutes('bookings');
+  }
+}

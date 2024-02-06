@@ -37,6 +37,7 @@ export class AuthorisationMiddleware implements NestMiddleware {
         const decodedToken = Jose.decodeJwt(token);
         if (decodedToken.userId) {
           req.body.userId = decodedToken.userId;
+          req.body.role = decodedToken.role;
         }
       } catch (error: unknown) {
         throw new UnauthorizedException(`Token verification failed`);

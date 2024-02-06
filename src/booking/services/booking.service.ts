@@ -34,7 +34,7 @@ export class BookingService implements BookingServiceInterface {
   async getById(id: number): Promise<BookingEntity> {
     return this.bookingRepository.findOne({
       where: { id },
-      relations: ['parking-spot', 'user'],
+      relations: ['parkingSpot', 'createdBy'],
     });
   }
 
