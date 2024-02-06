@@ -7,5 +7,6 @@ export interface BookingServiceInterface {
   delete(id: number): Promise<void>;
   bookParkingSpot(
     bookParkingSpotDto: BookParkingSpotDto,
+    userId: number
   ): Promise<void>;
 }

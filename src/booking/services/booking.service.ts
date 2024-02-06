@@ -32,6 +32,10 @@ export class BookingService implements BookingServiceInterface {
   }
 
   async getById(id: number): Promise<BookingEntity> {
+    if (!(await this.exists(id))) {
+      throw new NotFoundException(`Booking with ID [${id}] not found!`);
+    }
+
     return this.bookingRepository.findOne({
       where: { id },
       relations: ['parkingSpot', 'createdBy'],
@@ -39,24 +43,30 @@ export class BookingService implements BookingServiceInterface {
   }
 
   async delete(id: number): Promise<void> {
+    if (!(await this.exists(id))) {
+      throw new NotFoundException(`Booking with ID [${id}] not found!`);
+    }
+
     await this.bookingRepository.delete(id);
 
     this.logger.log(`Booking with ID [${id}] deleted successfully.`);
   }
 
-  async bookParkingSpot(bookParkingSpotDto: BookParkingSpotDto): Promise<void> {
-    const { createdById, startDate, endDate, parkingSpotId } =
-      bookParkingSpotDto;
+  async bookParkingSpot(
+    bookParkingSpotDto: BookParkingSpotDto,
+    userId: number,
+  ): Promise<void> {
+    const { startDate, endDate, parkingSpotId } = bookParkingSpotDto;
 
-    const createdBy = await this.userService.getById(createdById);
+    const createdBy = await this.userService.getById(userId);
     if (!createdBy) {
-      throw new NotFoundException(`User with id ${createdById} not found.`);
+      throw new NotFoundException(`User with ID [${userId}] not found.`);
     }
 
     const parkingSpot = await this.parkingSpotService.getById(parkingSpotId);
     if (!parkingSpot) {
       throw new NotFoundException(
-        `Parking spot with id ${parkingSpotId} not found.`,
+        `Parking spot with ID [${parkingSpotId}] not found.`,
       );
     }
 
@@ -64,7 +74,7 @@ export class BookingService implements BookingServiceInterface {
       .createQueryBuilder('booking')
       .where(
         'booking.parkingSpotId = :parkingSpotId AND ' +
-          '((booking.startDate <= :startDate AND booking.endDate >= :startDate) OR (booking.startDate >= :startDate AND booking.startDate <= :endDate))',
+          '((booking.startDate < :startDate AND booking.endDate > :startDate) OR (booking.startDate > :startDate AND booking.startDate < :endDate))',
         {
           parkingSpotId: bookParkingSpotDto.parkingSpotId,
           startDate: bookParkingSpotDto.startDate,

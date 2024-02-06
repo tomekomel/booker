@@ -6,14 +6,15 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
-  Post, UseGuards,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
 import { BookParkingSpotDto } from '../dto/book-parking-spot.dto';
 import { AuthorisedUserParams } from '../../authorisation/decorators';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
-import {CanAccessBookingGuard} from "../../authorisation/guards/can-access-booking.guard";
+import { CanAccessBookingGuard } from '../../authorisation/guards/can-access-booking.guard';
 
 @Controller('bookings')
 export class BookingController {
@@ -31,17 +32,18 @@ export class BookingController {
   async getBooking(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<BookingEntity> {
-    if (!(await this.bookingService.exists(bookingId))) {
-      throw new NotFoundException('Booking not found!');
-    }
     return this.bookingService.getById(bookingId);
   }
 
   @Post()
   async bookParkingSpot(
     @Body() bookParkingSpot: BookParkingSpotDto,
+    @AuthorisedUserParams() userParams: UserParamsInterface,
   ): Promise<void> {
-    await this.bookingService.bookParkingSpot(bookParkingSpot);
+    await this.bookingService.bookParkingSpot(
+      bookParkingSpot,
+      userParams.userId,
+    );
   }
 
   @Delete(':bookingId')
@@ -49,9 +51,6 @@ export class BookingController {
   async delete(
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<void> {
-    if (!(await this.bookingService.exists(bookingId))) {
-      throw new NotFoundException('Booking not found!');
-    }
     await this.bookingService.delete(bookingId);
   }
 }

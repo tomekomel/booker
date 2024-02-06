@@ -33,7 +33,7 @@ export class CanAccessBookingGuard implements CanActivate {
 
     if (booking.createdBy.id !== userParams.userId) {
       this.logger.warn(
-        `Request to booking: [${bookingId}] not authorised for userId: [${userParams.userId}]!`,
+        `Request to access booking: [${bookingId}] is not authorised for userId: [${userParams.userId}]!`,
       );
       return false;
     }
