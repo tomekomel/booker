@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -24,7 +23,7 @@ export class BookingController {
   async getBookings(
     @AuthorisedUserParams() userParams: UserParamsInterface,
   ): Promise<BookingEntity[]> {
-    return this.bookingService.getAll();
+    return this.bookingService.getAll(userParams);
   }
 
   @Get(':bookingId')
