@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BookingModule } from './booking/booking.module';
 import { DatabaseModule } from './database/database.module';
 import { dbConfig } from './database/database.config';
-import { AuthorisationMiddleware } from './authorisation/authorisation.middleware';
+import { AuthorisationMiddleware } from './authorisation/middlewares';
 
 @Module({
   imports: [

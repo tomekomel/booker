@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { parseBearerToken } from './parse-bearer-token';
+import { parseBearerToken } from '../parse-bearer-token';
 import { ConfigService } from '@nestjs/config';
 import * as Jose from 'jose';
 
@@ -22,8 +22,6 @@ export class AuthorisationMiddleware implements NestMiddleware {
       this.configService.get('DO_NOT_AUTHORISE') === 'true'
     ) {
       this.logger.log('Local Environment: Skipping authorisation');
-
-      req.body.brokerId = 'Local';
     } else {
       const token = parseBearerToken(req.headers);
       if (!token) {
@@ -34,7 +32,7 @@ export class AuthorisationMiddleware implements NestMiddleware {
       }
 
       try {
-        const decodedToken = Jose.decodeJwt(token);
+        const decodedToken: Jose.JWTPayload = Jose.decodeJwt(token);
         if (decodedToken.userId) {
           req.body.userId = decodedToken.userId;
           req.body.role = decodedToken.role;
