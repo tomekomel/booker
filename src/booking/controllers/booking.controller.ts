@@ -13,7 +13,7 @@ import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
 import { CreateBookingDto, UpdateBookingDto } from '../dto';
 import { AuthorisedUserParams } from '../../authorisation/decorators';
-import { UserParamsInterface } from '../../authorisation/user-params.interface';
+import { UserParams } from '../../authorisation/user.params';
 import { CanAccessBookingGuard } from '../../authorisation/guards/can-access-booking.guard';
 
 @Controller('bookings')
@@ -22,7 +22,7 @@ export class BookingController {
 
   @Get()
   async getBookings(
-    @AuthorisedUserParams() userParams: UserParamsInterface,
+    @AuthorisedUserParams() userParams: UserParams,
   ): Promise<BookingEntity[]> {
     return this.bookingService.getAll(userParams);
   }
@@ -38,7 +38,7 @@ export class BookingController {
   @Post()
   async createBooking(
     @Body() bookParkingSpot: CreateBookingDto,
-    @AuthorisedUserParams() userParams: UserParamsInterface,
+    @AuthorisedUserParams() userParams: UserParams,
   ): Promise<void> {
     await this.bookingService.create(bookParkingSpot, userParams.userId);
   }

@@ -1,11 +1,11 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { parseBearerToken } from './parse-bearer-token';
 import * as Jose from 'jose';
-import { UserParamsInterface } from './user-params.interface';
+import { UserParams } from './user.params';
 
 export function getUserParamsFromContext(
   ctx: ExecutionContext,
-): UserParamsInterface {
+): UserParams {
   const request = ctx.switchToHttp().getRequest();
   const token = parseBearerToken(request.headers);
 

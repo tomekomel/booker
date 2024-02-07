@@ -1,4 +1,4 @@
-export interface UserParamsInterface {
+export interface UserParams {
     userId: number;
     role: string;
 }

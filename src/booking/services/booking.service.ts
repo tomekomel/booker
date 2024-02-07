@@ -6,7 +6,7 @@ import { CreateBookingDto, UpdateBookingDto } from '../dto';
 import { ParkingSpotService } from './parking-spot.service';
 import { UserService } from './user.service';
 import { BookingServiceInterface } from './booking-service.interface';
-import { UserParamsInterface } from '../../authorisation/user-params.interface';
+import { UserParams } from '../../authorisation/user.params';
 import { UserRole } from '../../authorisation/user-roles.enum';
 import { BookingTimeValidationService } from './booking-time-validation.service';
 
@@ -26,7 +26,7 @@ export class BookingService implements BookingServiceInterface {
     return this.bookingRepository.existsBy({ id });
   }
 
-  async getAll(userParams: UserParamsInterface): Promise<BookingEntity[]> {
+  async getAll(userParams: UserParams): Promise<BookingEntity[]> {
     if (userParams.role === UserRole.ADMIN) {
       return this.bookingRepository.find();
     } else if (userParams.role === UserRole.USER) {

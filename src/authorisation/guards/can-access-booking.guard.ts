@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UserParamsInterface } from '../user-params.interface';
+import { UserParams } from '../user.params';
 import { getUserParamsFromContext } from '../get-user-params-from-context';
 import { UserRole } from '../user-roles.enum';
 import { BookingService } from '../../booking/services';
@@ -17,7 +17,7 @@ export class CanAccessBookingGuard implements CanActivate {
   constructor(private readonly bookingService: BookingService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const userParams: UserParamsInterface = getUserParamsFromContext(context);
+    const userParams: UserParams = getUserParamsFromContext(context);
     const request = context.switchToHttp().getRequest();
     const bookingId = Number(request.params.bookingId);
 
