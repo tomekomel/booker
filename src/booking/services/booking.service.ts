@@ -1,19 +1,13 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingEntity } from '../entities';
 import { Repository } from 'typeorm';
-import {
-  ConflictException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateBookingDto } from '../dto/create-booking.dto';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CreateBookingDto, UpdateBookingDto } from '../dto';
 import { ParkingSpotService } from './parking-spot.service';
 import { UserService } from './user.service';
 import { BookingServiceInterface } from './booking-service.interface';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
 import { UserRole } from '../../authorisation/user-roles.enum';
-import { UpdateBookingDto } from '../dto/update-booking.dto';
 import { BookingTimeValidationService } from './booking-time-validation.service';
 
 @Injectable()
@@ -117,10 +111,10 @@ export class BookingService implements BookingServiceInterface {
     }
 
     await this.bookingTimeValidationService.validateBookingTime(
-        parkingSpotId,
-        startDate,
-        endDate,
-        bookingId
+      parkingSpotId,
+      startDate,
+      endDate,
+      bookingId,
     );
 
     booking.startDate = startDate;

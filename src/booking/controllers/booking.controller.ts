@@ -11,11 +11,10 @@ import {
 } from '@nestjs/common';
 import { BookingService } from '../services';
 import { BookingEntity } from '../entities';
-import { CreateBookingDto } from '../dto/create-booking.dto';
+import { CreateBookingDto, UpdateBookingDto } from '../dto';
 import { AuthorisedUserParams } from '../../authorisation/decorators';
 import { UserParamsInterface } from '../../authorisation/user-params.interface';
 import { CanAccessBookingGuard } from '../../authorisation/guards/can-access-booking.guard';
-import { UpdateBookingDto } from '../dto/update-booking.dto';
 
 @Controller('bookings')
 export class BookingController {
@@ -41,10 +40,7 @@ export class BookingController {
     @Body() bookParkingSpot: CreateBookingDto,
     @AuthorisedUserParams() userParams: UserParamsInterface,
   ): Promise<void> {
-    await this.bookingService.create(
-      bookParkingSpot,
-      userParams.userId,
-    );
+    await this.bookingService.create(bookParkingSpot, userParams.userId);
   }
 
   @Put(':bookingId')
