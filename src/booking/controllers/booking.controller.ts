@@ -37,10 +37,10 @@ export class BookingController {
 
   @Post()
   async createBooking(
-    @Body() bookParkingSpot: CreateBookingDto,
+    @Body() createBookingDto: CreateBookingDto,
     @AuthorisedUserParams() userParams: UserParams,
   ): Promise<void> {
-    await this.bookingService.create(bookParkingSpot, userParams.userId);
+    await this.bookingService.create(createBookingDto, userParams.userId);
   }
 
   @Put(':bookingId')
